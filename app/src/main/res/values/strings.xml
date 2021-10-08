@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Scope</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notification</string>
+    <string name="dictionary">Dictionnaire</string>
+    <string name="userPosition">Position actuelle</string>
+    <string name="positionXLabel">Position X :</string>
+    <string name="positionYLabel">Position Y :</string>
+    <string name="positionZLabel">Position Z :</string>
+    <string name="positionX"></string>
+    <string name="positionY"></string>
+    <string name="positionZ"></string>
+
+</resources>
