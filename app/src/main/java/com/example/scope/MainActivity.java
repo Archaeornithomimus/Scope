@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +32,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     LocationManager locationManager = null;
-    MyLocationListener myLocationListener; // écouteur
+    public static MyLocationListener myLocationListener; // écouteur
     private ActivityMainBinding binding;
     private String fournisseur;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 2001;
@@ -67,15 +66,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         //position update
         findLocation();
-        LocationManager locationManager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
+
         //orientation update
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
     }
 
 
-    //LocationManager locationManager = null;
     private void findLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -94,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             {
                 // dernière position connue
                 Location localisation = locationManager.getLastKnownLocation(fournisseur);
-                myLocationListener = new MyLocationListener();
+                myLocationListener = new MyLocationListener(this);
 
                 if(localisation != null)
                 {
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
 
                 // on configure la mise à jour automatique : au moins 10 mètres et 15 secondes
-                locationManager.requestLocationUpdates(fournisseur, 15000, 10, myLocationListener);
+                locationManager.requestLocationUpdates(fournisseur, 5000, 0, myLocationListener);
             }
         }
 
@@ -155,4 +153,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             z = event.values[2];
         }
     }
+
+
+
 }
