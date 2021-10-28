@@ -30,24 +30,22 @@ import com.example.scope.databinding.ActivityMainBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity {
     LocationManager locationManager = null;
     public static MyLocationListener myLocationListener; // écouteur
     private ActivityMainBinding binding;
     private String fournisseur;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
+    private Calculateur calculateur;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        this.calculateur = new Calculateur();
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -66,10 +64,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         //position update
         findLocation();
-
-        //orientation update
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
     }
 
@@ -122,36 +116,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return false;
         }
         return true;
-    }
-
-    @Override
-    protected void onPause() {
-        // unregister the sensor (désenregistrer le capteur)
-        sensorManager.unregisterListener(this, accelerometer);
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        super.onResume();
-    }
-
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Rien à faire la plupart du temps
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        // Récupérer les valeurs du capteur
-        float x, y, z;
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            x = event.values[0];
-            y = event.values[1];
-            z = event.values[2];
-        }
     }
 
 
