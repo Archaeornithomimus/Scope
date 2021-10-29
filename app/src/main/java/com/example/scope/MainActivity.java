@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         }
         //position update
         findLocation();
-
     }
 
 

@@ -37,8 +37,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
         View root = binding.getRoot();
         ListView listView = root.findViewById(R.id.list_planete);
 
-        ArrayAdapter arrayAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.planets, android.R.layout.simple_list_item_1);
-        listView.setAdapter(arrayAdapter);
+        String [] planetes;
+        planetes = getResources().getStringArray(R.array.planets);
+        PlanetsAdapter planetsAdapter = new PlanetsAdapter(getActivity(), planetes);
+        
+
+        listView.setAdapter(planetsAdapter);
         listView.setOnItemClickListener(this);
 
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -61,9 +65,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
         String name = adapterView.getItemAtPosition(position).toString();
             MainActivity.calculateur.setObjectVise(name);
         try {
-
+            MainActivity.calculateur.getCoordObjet();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }
