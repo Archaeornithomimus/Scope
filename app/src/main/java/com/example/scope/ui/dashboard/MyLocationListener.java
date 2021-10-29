@@ -37,6 +37,7 @@ public class MyLocationListener implements LocationListener{
         longitude = String.valueOf(location.getLongitude());
         altitude = String.valueOf(location.getAltitude());
 
+
         Log.d("sender", "Broadcasting message");
         Intent intent = new Intent("position Update");
         // You can also include some extra data.

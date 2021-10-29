@@ -32,12 +32,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     LocationManager locationManager = null;
-    public static MyLocationListener myLocationListener; // écouteur
+    public MyLocationListener myLocationListener; // écouteur
     private ActivityMainBinding binding;
     private String fournisseur;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
-    private Calculateur calculateur;
+    public static Calculateur calculateur;
 
 
     @Override

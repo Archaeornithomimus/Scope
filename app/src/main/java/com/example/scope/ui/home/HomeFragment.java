@@ -16,9 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.scope.MainActivity;
 import com.example.scope.R;
 import com.example.scope.databinding.FragmentHomeBinding;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemClickListener {
@@ -56,5 +58,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT).show();
+        String name = adapterView.getItemAtPosition(position).toString();
+            MainActivity.calculateur.setObjectVise(name);
+        try {
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

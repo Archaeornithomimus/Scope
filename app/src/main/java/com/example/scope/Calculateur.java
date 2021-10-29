@@ -12,20 +12,43 @@ import okhttp3.ResponseBody;
 
 public class Calculateur {
     private final OkHttpClient client = new OkHttpClient();
+    private String longitude;
+    private String latitude;
+    private String altitude;
+    private String objetVise;
 
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setAltitude(String altitude) {
+        this.altitude = altitude;
+    }
+
+    public void setObjectVise(String objectVise) {
+        this.objetVise = objectVise;
+    }
 
     public Calculateur(){
+        this.longitude="";
+        this.altitude="";
+        this.altitude="";
+        this.objetVise="";
 
     }
 
-    public void getCoordObjet(String objet, double latPosition, double longPosition, double altitude, Callback responseCallback) throws IOException {
+    public void getCoordObjet() throws IOException {
         Calendar c = Calendar.getInstance();
         Date startDate = c.getTime();
         c.add(Calendar.HOUR,4);
         Date endDate = c.getTime();
 
         HttpUrl.Builder httpBuilder = HttpUrl.parse("https://ssd.jpl.nasa.gov/api/horizons.api").newBuilder();
-        if (objet != null) {
+        if (objetVise != null) {
             httpBuilder
                     .addQueryParameter("format","text")
                     .addQueryParameter("COMMAND","moon")
@@ -33,7 +56,7 @@ public class Calculateur {
                     .addQueryParameter("MAKE_EPHEM","YES")
                     .addQueryParameter("EPHEM_TYPE","OBSERVER")
                     .addQueryParameter("CENTER","coord")
-                    .addQueryParameter("SITE_COORD",latPosition +","+longPosition+','+altitude)
+                    .addQueryParameter("SITE_COORD",latitude +","+longitude+','+altitude)
                     .addQueryParameter("START_TIME", String.valueOf(startDate))
                     .addQueryParameter("STOP_TIME", String.valueOf(endDate))
                     .addQueryParameter("STEP_SIZE","7200")
