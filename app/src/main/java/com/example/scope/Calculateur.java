@@ -1,13 +1,17 @@
 package com.example.scope;
 
+import android.service.dreams.DreamService;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class Calculateur {
@@ -47,9 +51,9 @@ public class Calculateur {
         c.add(Calendar.HOUR,4);
         Date endDate = c.getTime();
 
-        HttpUrl.Builder httpBuilder = HttpUrl.parse("https://ssd.jpl.nasa.gov/api/horizons.api").newBuilder();
+        HttpUrl.Builder httpBuilder = HttpUrl.get("https://www.google.fr/").newBuilder();
         if (objetVise != null) {
-            httpBuilder
+            /*httpBuilder
                     .addQueryParameter("format","text")
                     .addQueryParameter("COMMAND","moon")
                     .addQueryParameter("OBJ_DATA","NO")
@@ -64,15 +68,18 @@ public class Calculateur {
                     .addQueryParameter("ANG_FORMAT","DEG")
                     .addQueryParameter("APPARENT","REFRACTED")
                     .addQueryParameter("TIME_DIGITS","SECONDS")
-                    .addQueryParameter("CSV_FORMAT","YES");
-
+                    .addQueryParameter("CSV_FORMAT","YES");*/
             Request request = new Request.Builder().url(httpBuilder.build()).build();
             try {
-                ResponseBody response = client.newCall(request).execute().body();
-                System.out.println(response.string());
+                Call request2 = client.newCall(request);
+                Response response = request2.execute();
+                System.out.println("toto");
+                //Response response = client.newCall(request).execute();
+                //System.out.println(response.string());
             } catch (IOException e){
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
+
         }
 
 

@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private String fournisseur;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
+    private static final int PERMISSIONS_REQUEST_ACCESS_INTERNET = 100;
     public static Calculateur calculateur;
 
 
@@ -56,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            requestPermissions(new String[]{Manifest.permission.INTERNET}, PERMISSIONS_REQUEST_ACCESS_INTERNET);
             //Après ce point, vous attendez le callback dans onRequestPermissionsResult
             checkAndRequestPermissions(); //verifie la permission
         } else {
@@ -104,9 +106,10 @@ public class MainActivity extends AppCompatActivity {
         List<String> listPermissionsNeeded = new ArrayList<>();
         listPermissionsNeeded.clear();
         int contact= ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if (contact != PackageManager.PERMISSION_GRANTED) {
+        int contactInternet = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
+        if (contact != PackageManager.PERMISSION_GRANTED || contactInternet != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            listPermissionsNeeded.add(Manifest.permission.INTERNET);
         }
         if (!listPermissionsNeeded.isEmpty())
         {
