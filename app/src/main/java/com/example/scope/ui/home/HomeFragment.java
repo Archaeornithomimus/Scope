@@ -64,11 +64,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
         Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT).show();
         String name = adapterView.getItemAtPosition(position).toString();
             MainActivity.calculateur.setObjectVise(name);
-        try {
             MainActivity.calculateur.getCoordObjet();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

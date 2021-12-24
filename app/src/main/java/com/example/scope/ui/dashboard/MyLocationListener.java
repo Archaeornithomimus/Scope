@@ -13,9 +13,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.scope.Calculateur;
 import com.example.scope.MainActivity;
 import com.example.scope.R;
 import com.example.scope.databinding.ActivityMainBinding;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyLocationListener implements LocationListener{
     public String latitude;
@@ -29,7 +34,6 @@ public class MyLocationListener implements LocationListener{
 
     @Override
     public void onLocationChanged(Location location) {
-
         Log.d("GPS", "localisation : " + location.toString());
         String coordonnees = String.format("Latitude : %f - Longitude : %f\n", location.getLatitude(), location.getLongitude());
         Log.d("GPS", "coordonnees : " + coordonnees);
@@ -45,7 +49,6 @@ public class MyLocationListener implements LocationListener{
         intent.putExtra("latitude", latitude);
         intent.putExtra("altitude", altitude);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
 
     }
 
