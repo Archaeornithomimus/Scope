@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                     // on notifie la localisation
                     myLocationListener.onLocationChanged(localisation);
+                    calculateur.setAltitude(myLocationListener.altitude);
+                    calculateur.setLatitude(myLocationListener.latitude);
+                    calculateur.setLongitude(myLocationListener.longitude);
                 }
 
                 // on configure la mise à jour automatique : au moins 10 mètres et 15 secondes
