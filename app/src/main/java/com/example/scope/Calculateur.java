@@ -6,6 +6,7 @@ import android.service.dreams.DreamService;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,6 +36,7 @@ public class Calculateur {
     private String latitude;
     private String altitude;
     private String objetVise;
+    private String ephemeride;
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
@@ -59,56 +61,72 @@ public class Calculateur {
         this.objetVise="";
     }
 
-
-
     public void getCoordObjet() {
         LocalDateTime localDateTime = LocalDateTime.now();
 
-        SimpleDateFormat format = new SimpleDateFormat("uuuu-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault());
+        //SimpleDateFormat format = new SimpleDateFormat("uuuu-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         String startDate = dateTimeFormatter.format(localDateTime);
-        localDateTime.plusHours(4);
+        Log.d("StartDate","Date de début : " + startDate);
+
+        localDateTime = localDateTime.plusHours(4);
+        Log.d("localDatePlus4","Date local +4 : " + dateTimeFormatter.format(localDateTime));
         String endDate = dateTimeFormatter.format(localDateTime);
+        Log.d("EndDate","Date de fin : " + endDate);
         if (objetVise != null) {
             try {
-               /* HttpUrl url = new HttpUrl.Builder()
-                        .scheme("https")
-                        .host("ssd.jpl.nasa.gov")
-                        .addPathSegment("api/horizons.api")
-                        .addQueryParameter("format","text")
-                        .addQueryParameter("COMMAND","moon")
-                        .addQueryParameter("OBJ_DATA","NO")
-                        .addQueryParameter("MAKE_EPHEM","YES")
-                        .addQueryParameter("EPHEM_TYPE","OBSERVER")
-                        .addQueryParameter("CENTER","coord")
-                        .addQueryParameter("SITE_COORD",latitude +","+longitude+','+altitude)
-                        .addQueryParameter("START_TIME", String.valueOf(startDate))
-                        .addQueryParameter("STOP_TIME", String.valueOf(endDate))
-                        .addQueryParameter("STEP_SIZE","7200")
-                        .addQueryParameter("QUANTITIES","4")
-                        .addQueryParameter("ANG_FORMAT","DEG")
-                        .addQueryParameter("APPARENT","REFRACTED")
-                        .addQueryParameter("TIME_DIGITS","SECONDS")
-                        .build();*/
+
 
                 URL url = new URL("https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND="+
                         "'499'"+
-                        "&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord'&SITE_COORD='"
-                        +latitude +","+longitude+','+altitude +
+                        "&OBJ_DATA='NO'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord'&SITE_COORD='"
+                        +longitude +','+latitude+','+altitude +
                         "'&START_TIME='"+startDate+
                         "'&STOP_TIME='"+endDate+
                         "'&STEP_SIZE='7200'&QUANTITIES='4'&ANG_FORMAT='DEG'&APPARENT='REFRACTED'&TIME_DIGITS='SECONDS'");
+
+
+                new CalculateurPositionObjectTask(url).execute();
 // URL VALIDE : https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27499%27&OBJ_DATA=%27YES%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27coord%27&SITE_COORD=%2748,59,120%27&START_TIME=%272021-12-24%27&STOP_TIME=%272021-12-25%27&STEP_SIZE=%277200%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27REFRACTED%27&TIME_DIGITS=%27SECONDS%27
-                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
-                InputStream inputStream = httpURLConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String line = bufferedReader.readLine();
-                httpURLConnection.disconnect();
+                Log.d("URL", "URL Valide : " + url);
+                Log.d("ResultatRecherche","Donnée : " + ephemeride);
             } catch (IOException e){
                 e.printStackTrace();
             }
         }
     }
+
+    private class CalculateurPositionObjectTask extends AsyncTask<Void,Void,Void> {
+        String result;
+        URL url;
+
+        public CalculateurPositionObjectTask(URL url) {
+            this.url = url;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
+                String stringBuffer;
+                String string = "";
+                while ((stringBuffer = bufferedReader.readLine()) != null){
+                    string = String.format("%s%s", string, stringBuffer);
+                }
+                bufferedReader.close();
+                result = string;
+            } catch (IOException e){
+                e.printStackTrace();
+                result = e.toString();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            ephemeride = result; // Ajout dans une bdd local des tableaux ? ou fichier simple ? ou tableau ? (c'est gros pour un tableau)
+            super.onPostExecute(aVoid);
+
+        }
+    }
+
 }
