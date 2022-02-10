@@ -1,6 +1,9 @@
 package com.example.scope;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.service.dreams.DreamService;
 import android.util.Log;
@@ -37,6 +40,8 @@ public class Calculateur {
     private String altitude;
     private String objetVise;
     private String ephemeride;
+    DownloadManager manager;
+    private Context context;
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
@@ -54,11 +59,12 @@ public class Calculateur {
         this.objetVise = objectVise;
     }
 
-    public Calculateur(){
+    public Calculateur(Context context){
         this.longitude="0";
         this.altitude="0";
         this.altitude="0";
         this.objetVise="";
+        this.context=context;
     }
 
     public void getCoordObjet() {
@@ -78,7 +84,7 @@ public class Calculateur {
 
 
                 URL url = new URL("https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND="+
-                        "'499'"+
+                        "'301'"+
                         "&OBJ_DATA='NO'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord'&SITE_COORD='"
                         +longitude +','+latitude+','+altitude +
                         "'&START_TIME='"+startDate+
@@ -86,6 +92,11 @@ public class Calculateur {
                         "'&STEP_SIZE='7200'&QUANTITIES='4'&ANG_FORMAT='DEG'&APPARENT='REFRACTED'&TIME_DIGITS='SECONDS'");
 
 
+                manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                Uri uri = Uri.parse(url.toString());
+                DownloadManager.Request request = new DownloadManager.Request(uri);
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+                long reference = manager.enqueue(request);
                 new CalculateurPositionObjectTask(url).execute();
 // URL VALIDE : https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27499%27&OBJ_DATA=%27YES%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27coord%27&SITE_COORD=%2748,59,120%27&START_TIME=%272021-12-24%27&STOP_TIME=%272021-12-25%27&STEP_SIZE=%277200%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27REFRACTED%27&TIME_DIGITS=%27SECONDS%27
                 Log.d("URL", "URL Valide : " + url);
@@ -107,14 +118,9 @@ public class Calculateur {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
-                String stringBuffer;
-                String string = "";
-                while ((stringBuffer = bufferedReader.readLine()) != null){
-                    string = String.format("%s%s", string, stringBuffer);
-                }
-                bufferedReader.close();
-                result = string;
+                InputStreamReader reader = new InputStreamReader(url.openStream());
+                StringBuilder result = new StringBuilder();
+
             } catch (IOException e){
                 e.printStackTrace();
                 result = e.toString();
