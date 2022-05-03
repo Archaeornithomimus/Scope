@@ -6,21 +6,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.example.scope.Calculateur;
-import com.example.scope.MainActivity;
-import com.example.scope.R;
-import com.example.scope.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MyLocationListener implements LocationListener{
     public String latitude;

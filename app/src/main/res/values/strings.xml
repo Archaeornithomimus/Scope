@@ -13,10 +13,10 @@
     <string name="positionZ"></string>
 
     <string-array name="planets">
-        <item>Moon</item>
         <item>Mercury</item>
         <item>Venus</item>
         <item>Earth</item>
+        <item>Moon</item>
         <item>Mars</item>
         <item>Jupiter</item>
         <item>Saturn</item>

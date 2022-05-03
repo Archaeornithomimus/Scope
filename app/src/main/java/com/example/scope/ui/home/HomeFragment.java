@@ -5,9 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,9 +17,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.scope.MainActivity;
 import com.example.scope.R;
 import com.example.scope.databinding.FragmentHomeBinding;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemClickListener {
 
@@ -37,9 +32,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
         View root = binding.getRoot();
         ListView listView = root.findViewById(R.id.list_planete);
 
-        String [] planetes;
-        planetes = getResources().getStringArray(R.array.planets);
-        PlanetsAdapter planetsAdapter = new PlanetsAdapter(getActivity(), planetes);
+        String [] planets;
+        planets = getResources().getStringArray(R.array.planets);
+        PlanetsAdapter planetsAdapter = new PlanetsAdapter(getActivity(), planets);
         
 
         listView.setAdapter(planetsAdapter);
@@ -62,8 +57,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT).show();
-        String name = adapterView.getItemAtPosition(position).toString();
-            MainActivity.calculateur.setObjectVise(name);
-            MainActivity.calculateur.getCoordObjet();
+        //String name = adapterView.getItemAtPosition(position).toString();
+        //Toast.makeText(getActivity(), "Item: " + name, Toast.LENGTH_SHORT).show();
+            MainActivity.calculator.startTracking(position);
     }
 }

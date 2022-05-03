@@ -3,10 +3,6 @@ package com.example.scope;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -38,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
     private static final int PERMISSIONS_REQUEST_ACCESS_INTERNET = 100;
-    public static Calculateur calculateur;
+    public static Calculator calculator;
+
 
 
     @Override
@@ -46,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        this.calculateur = new Calculateur(getApplicationContext());
+        this.calculator = new Calculator(getApplicationContext());
+        calculator.trackingOn = false;
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -93,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                     // on notifie la localisation
                     myLocationListener.onLocationChanged(localisation);
-                    calculateur.setAltitude(myLocationListener.altitude);
-                    calculateur.setLatitude(myLocationListener.latitude);
-                    calculateur.setLongitude(myLocationListener.longitude);
+                    calculator.setAltitude(myLocationListener.altitude);
+                    calculator.setLatitude(myLocationListener.latitude);
+                    calculator.setLongitude(myLocationListener.longitude);
                 }
 
                 // on configure la mise à jour automatique : au moins 10 mètres et 15 secondes
@@ -122,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
+
 
 
 
