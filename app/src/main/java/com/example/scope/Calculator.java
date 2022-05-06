@@ -1,7 +1,6 @@
 package com.example.scope;
 
 import android.content.Context;
-import android.text.format.Time;
 import android.util.Log;
 
 import com.android.volley.Network;
@@ -16,14 +15,10 @@ import com.android.volley.toolbox.StringRequest;
 
 import java.io.File;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Locale;
 
 public class Calculator {
@@ -31,9 +26,10 @@ public class Calculator {
     private String latitude;
     private String altitude;
     private int objetVise;
-    public Boolean trackingOn;
+
     private Context context;
     public String[][] ephemerid = new String[7201][3];
+    private TrackingThread trackingTread;
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
@@ -51,54 +47,82 @@ public class Calculator {
         switch (objectIndexInList){
             case 0 :
                 //Mercury
-                this.objetVise = 199;
-                Log.d("object visé :","Mercury");
+                if(this.objetVise!=199) {
+                    this.objetVise = 199;
+                    resetTracking();
+                    Log.d("object visé :", "Mercury");
+                }
                 break;
             case 1:
                 //Venus
-                this.objetVise = 299;
-                Log.d("object visé :","Venus");
+                if(this.objetVise!=299) {
+                    this.objetVise = 299;
+                    resetTracking();
+                    Log.d("object visé :", "Venus");
+                }
                 break;
             case 2:
                 //ISS
-                this.objetVise = -125544;
-                Log.d("object visé :","ISS");
+                if(this.objetVise!=-125544) {
+                    this.objetVise = -125544;
+                    resetTracking();
+                    Log.d("object visé :", "ISS");
+                }
                 break;
             case 3:
                 //Moon
-                this.objetVise = 301;
-                Log.d("object visé :","Moon");
+                if(this.objetVise!=301) {
+                    this.objetVise = 301;
+                    resetTracking();
+                    Log.d("object visé :", "Moon");
+                }
                 break;
             case 4:
                 //Mars
-                this.objetVise = 499;
-                Log.d("object visé :","Mars");
+                if(this.objetVise!=499) {
+                    this.objetVise = 499;
+                    resetTracking();
+                    Log.d("object visé :", "Mars");
+                }
                 break;
             case 5:
                 //Jupiter
-                this.objetVise = 599;
-                Log.d("object visé :","Jupiter");
+                if(this.objetVise!=599) {
+                    this.objetVise = 599;
+                    resetTracking();
+                    Log.d("object visé :", "Jupiter");
+                }
                 break;
             case 6:
                 //Saturn
-                this.objetVise = 699;
-                Log.d("object visé :","Saturn");
+                if(this.objetVise!=699) {
+                    this.objetVise = 699;
+                    resetTracking();
+                    Log.d("object visé :", "Saturn");
+                }
                 break;
             case 7:
                 //Uranus
-                this.objetVise = 799;
-                Log.d("object visé :","Uranus");
+                if(this.objetVise!=799) {
+                    this.objetVise = 799;
+                    resetTracking();
+                    Log.d("object visé :", "Uranus");
+                }
                 break;
-            case 8:
+            case 8 :
                 //Neptune
-                this.objetVise = 899;
-                Log.d("object visé :","Neptune");
+                if(this.objetVise!=899) {
+                    this.objetVise = 899;
+                    resetTracking();
+                    Log.d("object visé :", "Neptune");
+
+                }
                 break;
             default:
                 Log.d("object visé :","error");
                 this.objetVise= -1;
+                resetTracking();
                 break;
-
         }
     }
 
@@ -108,6 +132,7 @@ public class Calculator {
         this.altitude = "0";
         this.objetVise = -1;
         this.context = context;
+
     }
 
     public int getObjetVise() {
@@ -194,8 +219,7 @@ public class Calculator {
                                     Log.d("Table Line",ephemerid[i][0] + ephemerid[i][1] + ephemerid[i][2]);
                                 }
                                 Log.d("Ephemerid status :", "File acquired");
-                                trackingOn=true;
-                                trackingTask(objetVise);
+                                lunchTrackingTask();
                             }
                         }, new Response.ErrorListener() {
                     @Override
@@ -214,38 +238,68 @@ public class Calculator {
     }
 
     public void startTracking(int objectIndexInList){
-        if (objetVise==-1){
-            resetTracking();
-        }
         setObjectVise(objectIndexInList);
         getCoordObjet();
     }
 
     public void stopTracking(){
-        trackingOn = false;
+        trackingTread.trackingOn = false;
+        objetVise=-1;
+        if (this.trackingTread!=null){
+            if(trackingTread.isAlive()){
+                trackingTread.trackingOn=false;
+                trackingTread.interrupt();
+            }
+        }
         resetTracking();
+
     }
 
     public void resetTracking(){
         Log.d("coordonnée Send : ", "0 et 0");
     }
 
-    public void trackingTask(int objetVise){
-        int sightObject = objetVise;
-        double azimuth = 12; // change to string maybe
-        double elevation = 15;
+    public void lunchTrackingTask(){
+        if (this.trackingTread!=null){
+            if(trackingTread.isAlive()){
+                trackingTread.trackingOn=false;
+                trackingTread.interrupt();
+            }
+        }
+        this.trackingTread = new TrackingThread(ephemerid);
+        this.trackingTread.trackingOn=true;
+        trackingTread.start();
+    }
+
+
+}
+
+class TrackingThread extends Thread implements Runnable {
+    private String[][] ephemerid;
+    public Boolean trackingOn;
+
+    public TrackingThread(String[][] ephemerid){
+        super();
+        this.trackingOn = false;
+        this.ephemerid = ephemerid;
+        //this.objetVise = MainActivity.calculator.getObjetVise();
+    }
+
+    public void run(){
+        //int sightObject = objetVise;
+        double azimuth = 0; // change to string maybe
+        double elevation = 0;
         int ephemeridLine = findFirstRow();
         azimuth = Double.parseDouble(ephemerid[ephemeridLine][1]);
         elevation = Double.parseDouble(ephemerid[ephemeridLine][2]);
         Log.d("Send azimuth : ", String.valueOf(azimuth));
         Log.d("Send elevation: ", String.valueOf(elevation));
         while (trackingOn){
-            if (sightObject != this.objetVise){
-                trackingOn = false;
-                stopTracking();
-            }
+            /*if (sightObject != MainActivity.calculator.getObjetVise()){
+                MainActivity.calculator.trackingOn = false;
+                MainActivity.calculator.stopTracking();
+            }*/
             ZonedDateTime actualTime = LocalDateTime.now().atZone(ZoneId.of("UTC"));
-
 
             if (ephemeridLine+1<ephemerid.length-2){
                 String evaluateNextEphemeridDateString = ephemerid[ephemeridLine+1][0];
@@ -263,25 +317,12 @@ public class Calculator {
                     Log.d("Send azimuth : ", String.valueOf(azimuth));
                     Log.d("Send elevation: ", String.valueOf(elevation));
                 }
-
             } else{
-                stopTracking();
+                MainActivity.calculator.stopTracking();
             }
-
-
-
-            /*  Current Date and Hour
-            LocalDateTime localDateTime = LocalDateTime.now();
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-            String startDate = dateTimeFormatter.format(localDateTime);
-            Log.d("StartDate", "Date de début : " + startDate);
-            */
         }
 
     }
-
-
-
 
     public int findFirstRow(){
         int row = 0;
@@ -307,4 +348,6 @@ public class Calculator {
         return row;
     }
 }
+
+
 

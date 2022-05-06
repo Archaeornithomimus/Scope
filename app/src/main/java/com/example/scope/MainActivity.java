@@ -1,13 +1,18 @@
 package com.example.scope;
 
+
+
 import android.Manifest;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
+
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.util.Log;
 
 import com.example.scope.ui.dashboard.MyLocationListener;
@@ -44,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         this.calculator = new Calculator(getApplicationContext());
-        calculator.trackingOn = false;
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -97,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // on configure la mise à jour automatique : au moins 10 mètres et 15 secondes
-                locationManager.requestLocationUpdates(fournisseur, 5000, 0, myLocationListener);
+                locationManager.requestLocationUpdates(fournisseur, 15000, 2, myLocationListener);
             }
         }
 
@@ -120,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
+
 
 
 

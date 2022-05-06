@@ -13,10 +13,10 @@ import com.example.scope.R;
 public class PlanetsAdapter extends ArrayAdapter<String> {
 
     private Integer[] tab_images_pour_la_liste = {
-            R.drawable.moon,
             R.drawable.mercure,
             R.drawable.venus,
-            R.drawable.earth,
+            R.drawable.iss,
+            R.drawable.moon,
             R.drawable.mars,
             R.drawable.jupiter,
             R.drawable.saturn,
@@ -30,7 +30,6 @@ public class PlanetsAdapter extends ArrayAdapter<String> {
                 getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(R.layout.fragment_home, parent, false);
-
         TextView textView = (TextView) rowView.findViewById(R.id.planete);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.imagePlanete);
 

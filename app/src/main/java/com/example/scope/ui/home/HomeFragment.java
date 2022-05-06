@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,6 +32,14 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         ListView listView = root.findViewById(R.id.list_planete);
+
+        /*Button stopTrackingBtn = root.findViewById(R.id.stopTrackingBtn);
+        stopTrackingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.calculator.stopTracking();
+            }
+        });*/
 
         String [] planets;
         planets = getResources().getStringArray(R.array.planets);

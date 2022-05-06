@@ -11,11 +11,13 @@
     <string name="positionX"></string>
     <string name="positionY"></string>
     <string name="positionZ"></string>
+    <string name="stopTrackingBtn">Stop tracking</string>
+
 
     <string-array name="planets">
         <item>Mercury</item>
         <item>Venus</item>
-        <item>Earth</item>
+        <item>ISS</item>
         <item>Moon</item>
         <item>Mars</item>
         <item>Jupiter</item>
