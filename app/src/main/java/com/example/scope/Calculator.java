@@ -316,6 +316,7 @@ class TrackingThread extends Thread implements Runnable {
                     Log.d("Nouvelle Ligne", String.valueOf(ephemeridLine+1));
                     Log.d("Send azimuth : ", String.valueOf(azimuth));
                     Log.d("Send elevation: ", String.valueOf(elevation));
+                    Log.d("Send sight Value: ", String.valueOf(azimuth) + "," + String.valueOf(elevation));
                 }
             } else{
                 MainActivity.calculator.stopTracking();

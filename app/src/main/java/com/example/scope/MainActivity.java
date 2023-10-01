@@ -2,9 +2,23 @@ package com.example.scope;
 
 
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.location.Criteria;
@@ -13,6 +27,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.example.scope.ui.dashboard.MyLocationListener;
@@ -32,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_ENABLE_BT = 354;
     LocationManager locationManager = null;
     public MyLocationListener myLocationListener; // écouteur
     private ActivityMainBinding binding;
@@ -40,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
     private static final int PERMISSIONS_REQUEST_ACCESS_INTERNET = 100;
     public static Calculator calculator;
+    public static BleManager bleManager;
 
 
 
@@ -66,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
             checkAndRequestPermissions(); //verifie la permission
         } else {
         }
+        askEnableBluetooth();
+
         //position update
         findLocation();
     }
@@ -85,14 +104,12 @@ public class MainActivity extends AppCompatActivity {
             fournisseur = locationManager.getBestProvider(criteria, true);
             Log.d("GPS", "fournisseur : " + fournisseur);
 
-            if(fournisseur != null)
-            {
+            if (fournisseur != null) {
                 // dernière position connue
                 Location localisation = locationManager.getLastKnownLocation(fournisseur);
                 myLocationListener = new MyLocationListener(this);
 
-                if(localisation != null)
-                {
+                if (localisation != null) {
                     // on notifie la localisation
                     myLocationListener.onLocationChanged(localisation);
                     calculator.setAltitude(myLocationListener.altitude);
@@ -106,24 +123,44 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-    private  boolean checkAndRequestPermissions() {
+
+    private boolean checkAndRequestPermissions() {
 
         List<String> listPermissionsNeeded = new ArrayList<>();
         listPermissionsNeeded.clear();
-        int contact= ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int contact = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         int contactInternet = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         if (contact != PackageManager.PERMISSION_GRANTED || contactInternet != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
             listPermissionsNeeded.add(Manifest.permission.INTERNET);
         }
-        if (!listPermissionsNeeded.isEmpty())
-        {
-            ActivityCompat.requestPermissions(this,listPermissionsNeeded.toArray
-                    (new String[listPermissionsNeeded.size()]),REQUEST_ID_MULTIPLE_PERMISSIONS);
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray
+                    (new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
             return false;
         }
         return true;
     }
+
+    public void askEnableBluetooth(){
+        BluetoothAdapter bluetoothAdapter;
+        bluetoothAdapter = getSystemService(BluetoothManager.class).getAdapter();
+        if (bluetoothAdapter == null) {
+            // Device doesn't support Bluetooth
+        }
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+        this.bleManager = new BleManager(this,bluetoothAdapter);
+
+
+    }
+
+
+
+
+
 
 
 

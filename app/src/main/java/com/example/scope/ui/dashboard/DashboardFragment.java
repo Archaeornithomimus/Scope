@@ -1,9 +1,22 @@
 package com.example.scope.ui.dashboard;
 
+import android.app.Activity;
+import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +24,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,6 +38,9 @@ import com.example.scope.MainActivity;
 import com.example.scope.R;
 import com.example.scope.databinding.FragmentDashboardBinding;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
@@ -30,6 +48,7 @@ public class DashboardFragment extends Fragment {
     public TextView positionX;
     public TextView positionY;
     public TextView positionZ;
+    Button buttonBluetoothConnect;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -41,13 +60,33 @@ public class DashboardFragment extends Fragment {
         positionX = (TextView) root.findViewById(R.id.positionX);
         positionY = (TextView) root.findViewById(R.id.positionY);
         positionZ = (TextView) root.findViewById(R.id.positionZ);
+        buttonBluetoothConnect = root.findViewById(R.id.buttonBluetoothConnect);
 
         positionY.setText("synchro en cours");
         positionX.setText("synchro en cours");
         positionZ.setText("synchro en cours");
+        if(MainActivity.bleManager.getIsConnected()) {
+            buttonBluetoothConnect.setText("Se connecter");
+        } else {
+            buttonBluetoothConnect.setText("Se déconnecter");
+        }
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
                 new IntentFilter("position Update"));
+
+        buttonBluetoothConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!MainActivity.bleManager.getIsConnected()){
+                    buttonBluetoothConnect.setText("Se déconnecter");
+                   MainActivity.bleManager.scanLeDevice();
+                } else {
+                    buttonBluetoothConnect.setText("Se connecter");
+                    MainActivity.bleManager.disconnectDevice();
+                }
+            }
+        });
 
 
 
@@ -78,6 +117,9 @@ public class DashboardFragment extends Fragment {
         binding = null;
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
     }
+
+
+
 
 
 
